@@ -8,7 +8,7 @@ A working, hands-on rebuild of NPCI's UPI Help chatbot on top of the new single-
 
 ## What this is
 
-Not a toy — every design decision here traces back to something confirmed by reading the real UPI Help codebase and the real target framework's source code:
+Every design decision here traces back to something confirmed by reading the real UPI Help codebase and the real target framework's source code:
 
 - **One shared `AgentLoop`**, not four separate agents — matches the real framework's own stated identity ("a transparent, single-agent, self-hosted runtime").
 - **Domains are tool groupings + prompt blocks**, not separate reasoning systems.
