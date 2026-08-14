@@ -40,42 +40,42 @@ A few decisions run through the entire codebase and are worth calling out up fro
 ## 3. High-level architecture
 
 ```
-                         ┌─────────────────────────┐
-                         │   static/index.html      │  ← single-page chat UI
-                         │   (vanilla JS, no build)  │
+                         ┌──────────────────────────┐
+                         │   static/index.html      |  ← single-page chat UI
+                         │   (vanilla JS, no build) │
                          └────────────┬─────────────┘
                                       │ fetch()
                          ┌────────────▼─────────────┐
-                         │        app.py (Flask)     │  ← HTTP layer / wiring
+                         │        app.py (Flask)    │  ← HTTP layer / wiring
                          └────────────┬─────────────┘
                                       │
               ┌───────────────────────┼────────────────────────┐
               │                       │                        │
      ┌────────▼────────┐   ┌──────────▼─────────┐   ┌──────────▼─────────┐
-     │  router/router.py │   │   core/session.py   │   │  core/events.py    │
-     │  domain + lane     │   │   per-conversation   │   │  structured trace  │
-     │  classification     │   │   pending-state       │   │  of every decision │
+     │ router/router.py│   │   core/session.py  |   │   core/events.py   │
+     │  domain + lane  │   │   per-conversation │   |   structured trace │
+     │  classification │   │   pending-state    │   |  of every decision │
      └────────┬────────┘   └──────────┬─────────┘   └──────────┬─────────┘
               │                       │                        │
               └───────────┬───────────┴────────────┬───────────┘
-                           │                        │
-                 ┌─────────▼─────────┐    ┌─────────▼─────────┐
-                 │   core/loop.py     │    │  core/hooks.py     │
-                 │   AgentLoop         │◄──►│  Safety Gateway     │
-                 │   (the ONE loop)    │    │  (pre-tool checks)  │
-                 └─────────┬─────────┘    └────────────────────┘
+                          │                        │
+                 ┌────────▼─────────┐    ┌────────▼─────────┐
+                 │   core/loop.py   │    │  core/hooks.py   │
+                 │   AgentLoop      │◄──►│  Safety Gateway  │
+                 │   (the ONE loop) │    │ (pre-tool checks)│
+                 └─────────┬────────┘    └──────────────────┘
                            │
               ┌────────────┼────────────────────────────┐
-              │            │                             │
+              │            │                            │
      ┌────────▼───┐ ┌──────▼──────┐ ┌────────▼──────┐ ┌──▼───────────┐
-     │  mandate_   │ │ payment_    │ │  faq_tools.py  │ │ dispute_     │
-     │  tools.py    │ │ tools.py     │ │                 │ │ tools.py      │
-     └────────┬───┘ └─────────────┘ └────────────────┘ └──┬───────────┘
-              │                                             │
-     ┌────────▼─────────────────────────────────────────────▼───────┐
-     │                    db/schema.py — SQLite (upi_help.db)         │
-     │        mandates · transactions · pending_intents · disputes    │
-     └──────────────────────────────────────────────────────────────┘
+     │  mandate_  │ │ payment_    │ │  faq_tools.py │ │ dispute_     │
+     │  tools.py  │ │ tools.py    │ │               │ │ tools.py     │
+     └────────┬───┘ └─────────────┘ └───────────────┘ └──┬───────────┘
+              │                                          │
+     ┌────────▼──────────────────────────────────────────▼───────┐
+     │    db/schema.py — SQLite (upi_help.db)                    │
+     │   mandates · transactions · pending_intents · disputes    │
+     └───────────────────────────────────────────────────────────┘
 
      Separate side-channel:
      domains/ocr_evidence.py  →  pytesseract  →  screenshot → evidence dict
